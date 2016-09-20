@@ -1,0 +1,98 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{AAA Project}
+%\author{Liron Mizrahi - 708810, <Insert name> - <Insert student no.>, <Insert name> - <Insert student no.>}
+\date{September 2016}
+
+\author{
+  Liron Mizrahi\\
+  \texttt{708810}
+  \and
+  Name\\
+  \texttt{student no.}
+  \and
+  Name\\
+  \texttt{student no.}
+}
+
+
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{algorithmic}
+
+\begin{document}
+
+\maketitle
+
+\section{Aims}
+The problem proposed is to solve Sudoku's using the Backtracking Algorithm and to verify the theoretical analysis of the algorithm.
+
+\section{Summary of Theory}
+A Backtracking algorithm is a type of brute force algorithm that incrementally builds candidates to the solution. If a candidate is found to be invalid, the algorithm 'backtracks' and deletes it if the algorithm determines that the candidate cannot possibly lead to a solution.
+
+\section{Experimental Methodology}
+\subsection{Understanding the theoretical analysis}
+The time complexity for this algorithm can be seen by working backwards from a single blank square. If there is only one blank square, then in the worst case there are $n$ possibilities that must be worked through. If there are two blank squares, then there are $n$ possibilities for the first square and $n$ possibilities for the second square corresponding to each of the possibilities for the first square. If there are three blank squares, then there are $n$ possibilities for the first blank. Each of those possibilities will lead to a puzzle with two blank squares that have $n^2$ possibilities.
+The algorithm performs a depth first search through all the possible solutions. So carrying on in this way, the worst case complexity end up being $O(n^m)$, where $n$ is the number of possibilities for each square and $m$ is the number of blank squares.
+
+\subsection{Deciding on Appropriate Hardware and Programming Language}
+We are more interested in the rate of growth of the performance of the algorithm than the actual running times and as such the specific hardware used will not be a relevant factor. However, the programming language that has been chosen is C++, as it is much easier and more reliable to time the algorithm with the OpenMP library, rather than Java's timing implementations. Also, Java would be eaier to use for this sort of problem but the Garbage Collector may change results drastically and lead to incorrect results.
+
+\subsection{Deciding on Appropriate Data Structures}
+The data structure chosen to store the sudoku was a 2D array. This is because the dimensions of the grid are know beforehand and arrays are fast and simple to use.
+
+\subsection{Implement the Algorithm}
+
+    \begin{algorithmic}[1]
+    %\Function{Increment}{$a$}
+    
+    \STATE Solve($int matrix[][]$)
+        \STATE int $row$
+        \STATE int $column$
+\newline
+        \IF {there are no empty squares} 
+            \RETURN $true$
+        \ENDIF
+\newline
+        \FOR{$value$ from $0$ \TO $9$}
+            \IF{there are no numbers in same row, column and 3x3 square as $value$}
+                \STATE $matrix[row][column]\gets value$
+            
+                \IF{Solve($matrix$)}
+                    \RETURN $true$
+                \ENDIF
+                
+                \STATE $matrix[row][column]\gets 0$
+            \ENDIF
+        \ENDFOR
+\newline
+        \RETURN $false$
+    \STATE EndSolve
+    %\EndFunction
+\newline
+    \end{algorithmic}
+
+The algorithm above takes in a sudoku as a 2D matrix. The if statement on line 4 checks if there are any empty blocks in the matrix, if there are then $row$ and $column$ are assigned to the corresponding block. If there are no empty blocks then the sudoku is complete. 
+
+The for loop on line 10 will iterate through the values $1$ to $9$ for the corresponding empty block. The if statement underneath checks if the current value can be placed in the block without breaking any of the rules of the sudoku. If it can be placed there then $matrix[row][column]$ is updated to the value.
+
+The if statement on line 10 will recursively call the Solve function for $matrix$ with the newly inserted variable.
+If the any function call reaches line 13 then it means the current setup has failed and that the latest value must be backtracked. This line will reset the current block to 0. Line 16 is the line that invokes backtracking. When a $false$ value is returned then the previous block that was updated must be tried again for the other values it has not tried yet. If every function call returns true then the sudoku has been solved. If the first function call returns false then the sudoku has no solution.
+
+\subsection{Create the Data}
+%TODO
+
+\section{Presentation of Results}
+%TODO
+
+\section{Interpretation of Results}
+%TODO
+
+\section{Relate results to Theory}
+%TODO
+
+\section{Conclusion}
+%TODO
+
+\end{document}

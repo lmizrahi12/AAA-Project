@@ -8,6 +8,7 @@
 using namespace std;
 
 void Print_Matrix(int matrix[9][9]);
+void printGrid(int grid[9][9]);
 bool Search_Row(int matrix[9][9], int row, int key);
 bool Search_Column(int matrix[9][9], int column, int key);
 bool Search_Square(int matrix[9][9], int row, int column, int key);
@@ -48,16 +49,34 @@ int main (int argc, char *argv[]){
 	infile.close();
 	
 	cout << "Initial matrix: " << endl;
-	Print_Matrix(matrix);
+	printGrid(matrix);
 
 	if(Solve(matrix)){
 		cout << "Solution matrix: " << endl;
-		Print_Matrix(matrix);
+		printGrid(matrix);
 	}
+	else
+		cout << "No Solution" << endl;
 }
 
+//Prints in a nicer format
+void printGrid(int grid[9][9]){
+	for (int i = 0; i < 9; i++){
+		for (int j = 0; j < 9; j++){
+			cout << grid[i][j];
+			if ( (j+1) % 3 == 0 )
+				cout << " | ";
+		}
 
+		cout << "\n";
 
+		if ( (i+1) % 3 == 0 ){
+			cout << "----------------- \n";
+		}
+
+	}
+
+}
 
 
 
@@ -70,6 +89,8 @@ void Print_Matrix(int matrix[9][9]){
 	}
 	cout << endl;
 }
+
+
 
 bool Search_Row(int matrix[9][9], int row, int key){
 	for(int i = 0;i < 9;i++){
@@ -117,20 +138,24 @@ bool Solve(int matrix[9][9]){
 	int row ;
 	int column;
 
-	if(!anyEmptyBlock(matrix, row, column)){
+	if(!anyEmptyBlock(matrix, row, column)){  //if there are no empty blocks then the sudoku is complete
 		return true;
 	}
 
 	for(int value = 0;value <= 9;value++){
-		if(!Search_Row(matrix, row, value)  &&  !Search_Column(matrix, column, value) && !Search_Square(matrix, row, column, value) ){
+		if(!Search_Row(matrix, row, value)  &&  !Search_Column(matrix, column, value) && !Search_Square(matrix, row, column, value) ){   //chaecks is value can fit at empty block
 			matrix[row][column] = value;
 
-			if(Solve(matrix) == 1){
+			/*if(Solve(matrix) == 1){
+				return true;
+			}*/
+
+			if(Solve(matrix)){   //Recursively call for next available block
 				return true;
 			}
 
-			matrix[row][column] = 0;
+			matrix[row][column] = 0;   //if Solve fails, rewrite block and try again
 		}
 	}
-	return false;
+	return false;   //invokes backtracking
 }
