@@ -49,6 +49,67 @@ int main (int argc, char *argv[]){
 		cout << "No Solution" << endl;
 }
 
+
+
+int findMax(int** boxes, int* rows, int* cols){	//Used in getMaxFilled to determine the maximum, can be modified to extract more info
+	int currMax = 0;
+	
+	for(int i = 0; i < 3; i++){
+		for(int j = 0; j < 3; j++){
+			if(boxes[i][j] > currMax) currMax = boxes[i][j];
+		}
+	}
+	
+	for(int i = 0; i < 9; i++){
+		if( (rows[i] > currMax) && (rows[i] > cols[i]) ) currMax = rows[i];
+		if(cols[i] > currMax) currMax = cols[i]
+	}
+	
+	return currMax;
+}
+
+int getMaxFilled(int** matrix){	//Finds the maximum number of cells filled in for any block/row/column
+	int** boxes = {	{0,0,0},
+					{0,0,0},
+					{0,0,0}};
+	int* rows = {0,0,0,0,0,0,0,0,0};
+	int* cols = {0,0,0,0,0,0,0,0,0};
+	
+	for(int i = 0; i < 9; i++){
+		for(int j = 0; j < 9; j++){
+			if(matrix[i][j] != 0){
+				rows[i]++;
+				column[j]++;
+				boxes[i/3][j/3]++;
+			}
+		}
+	}
+	
+	return findMax(boxes, rows, cols);
+}
+
+int getNumEmpty(int** matrix){	//Returns total number of empty cells in matrix
+	int numEmpty = 0;
+	
+	for(int i = 0; i < 9; i++){
+		for(int j = 0; j < 9; j++){
+			if(matrix[i][j] == 0) numEmpty++;
+		}
+	}
+	
+	return numEmpty;
+}
+
+double getDifficulty(int** matrix){	//A prototype metric for evaluating difficulty (Higher = harder)
+	int numEmpty = getNumEmpty(matrix);		//Number of empty cells
+	int maxFilled = getMaxFilled(matrix);	//Highest number of cells filled in for a block/row/column
+	
+	if(maxFilled == 0) return NULL;	//Nothing filled in, hence difficulty is set to null (99999999 is an option too I guess)
+	else return numEmpty/maxFilled;	//Difficulty would be higher if numEmpty is higher, easier if maxFilled is higher.
+}
+
+
+
 int** getGrid(int argc, char *argv[]){   //Gets input from a txt file and converts to a matrix.Replaces spaces with 0's.
 	int** matrix;
 	ifstream infile;
@@ -72,6 +133,8 @@ int** getGrid(int argc, char *argv[]){   //Gets input from a txt file and conver
 
 	return matrix;
 }
+
+
 
 //Prints in a nicer format
 void printGrid(int** grid){
