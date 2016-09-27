@@ -16,6 +16,9 @@ bool Search_Square(int** matrix, int row, int column, int key);
 bool anyEmptyBlock(int** matrix, int &row, int &column);
 bool Solve(int** matrix);
 
+//Difficulty metric
+double getDifficulty(int** matrix);
+
 int main (int argc, char *argv[]){
 	int** matrix;
 	int row = -1;
@@ -40,6 +43,9 @@ int main (int argc, char *argv[]){
 	
 	cout << "Initial matrix: " << endl;
 	printGrid(matrix);
+	
+	cout << "Difficulty metric: " << endl;
+	cout << getDifficulty(matrix) << endl;
 
 	if(Solve(matrix)){
 		cout << "Solution matrix: " << endl;
@@ -51,7 +57,7 @@ int main (int argc, char *argv[]){
 
 
 
-int findMax(int** boxes, int* rows, int* cols){	//Used in getMaxFilled to determine the maximum, can be modified to extract more info
+int findMax(int boxes[3][3], int rows[9], int cols[9]){	//Used in getMaxFilled to determine the maximum, can be modified to extract more info
 	int currMax = 0;
 	
 	for(int i = 0; i < 3; i++){
@@ -62,24 +68,24 @@ int findMax(int** boxes, int* rows, int* cols){	//Used in getMaxFilled to determ
 	
 	for(int i = 0; i < 9; i++){
 		if( (rows[i] > currMax) && (rows[i] > cols[i]) ) currMax = rows[i];
-		if(cols[i] > currMax) currMax = cols[i]
+		if(cols[i] > currMax) currMax = cols[i];
 	}
 	
 	return currMax;
 }
 
 int getMaxFilled(int** matrix){	//Finds the maximum number of cells filled in for any block/row/column
-	int** boxes = {	{0,0,0},
-					{0,0,0},
-					{0,0,0}};
-	int* rows = {0,0,0,0,0,0,0,0,0};
-	int* cols = {0,0,0,0,0,0,0,0,0};
+	int boxes[3][3] = {	{0,0,0},
+					    {0,0,0},
+                        {0,0,0}};
+	int rows[9] = {0,0,0,0,0,0,0,0,0};
+	int cols[9] = {0,0,0,0,0,0,0,0,0};
 	
 	for(int i = 0; i < 9; i++){
 		for(int j = 0; j < 9; j++){
 			if(matrix[i][j] != 0){
 				rows[i]++;
-				column[j]++;
+				cols[j]++;
 				boxes[i/3][j/3]++;
 			}
 		}
@@ -104,8 +110,8 @@ double getDifficulty(int** matrix){	//A prototype metric for evaluating difficul
 	int numEmpty = getNumEmpty(matrix);		//Number of empty cells
 	int maxFilled = getMaxFilled(matrix);	//Highest number of cells filled in for a block/row/column
 	
-	if(maxFilled == 0) return NULL;	//Nothing filled in, hence difficulty is set to null (99999999 is an option too I guess)
-	else return numEmpty/maxFilled;	//Difficulty would be higher if numEmpty is higher, easier if maxFilled is higher.
+	if(maxFilled == 0) return 0;	//Nothing filled in, hence difficulty is set to 0, since it is easy to choose any valid numbers
+   	else return numEmpty/maxFilled;	//Difficulty would be higher if numEmpty is higher, easier if maxFilled is higher.
 }
 
 
