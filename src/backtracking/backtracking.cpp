@@ -15,7 +15,7 @@
 					694000100800000034003490860318650200020708600706129080460907358080360002035042096
 					307104208025390104009780563008009650954017802073820000580003020006001005002068410
 	
-		metric - 'E' or 'D' (E for numEmpty, D for numEmpty/maxFilled) higher=harder
+		metric - 'E', 'D' or 'V' (E for numEmpty, D for numEmpty/maxFilled) higher=harder V for verification of algorithm
 	
 	*Output:
 	<int> numEmpty,<double> timeTaken(s)
@@ -40,7 +40,7 @@ OR	<double> difficulty,<double> timeTaken(s)
 
 using namespace std;
 
-const int NUM_IN_FILE = 10000;	//Number of sudokus in file to use
+const int NUM_IN_FILE = 6;	//Number of sudokus in file to use (should be automatically detected in future...)
 const int NUM_RUNS = 10;	//Number of refinements per sudoku
 
 //Utility
@@ -76,21 +76,35 @@ int main (int argc, char *argv[]){
 }
 
 void doAll(int*** sudokus, char metric){
-	for(int i = 0; i < NUM_IN_FILE; i++){
-		int** currSudoku = copySudoku(sudokus[i]);
-		
-		if(toupper(metric) == 'E')	cout << getNumEmpty(sudokus[i]) << ",";
-		else	cout << getDifficulty(currSudoku) << ",";
-		
-		double averageTime = 0;
-		for(int j = 0; j < NUM_RUNS; j++){
-			double start = omp_get_wtime();
+	if(toupper(metric) == 'V'){	//For verifying that the algorithm works
+		for(int i = 0; i < NUM_IN_FILE; i++){
+			int** currSudoku = copySudoku(sudokus[i]);
+			cout << "Initial sudoku:" << endl;
+			printGrid(currSudoku);
+
+			cout << "Completed sudoku:" << endl;
 			Solve(currSudoku);
-			double end = omp_get_wtime();
-			averageTime += (end-start)/(double) NUM_RUNS;
+			printGrid(currSudoku);
 		}
+	}
+	else{	//For empirical analysis
+	
+		for(int i = 0; i < NUM_IN_FILE; i++){
+			int** currSudoku = copySudoku(sudokus[i]);
 		
-		cout << averageTime << endl;
+			if(toupper(metric) == 'E')	cout << getNumEmpty(sudokus[i]) << ",";
+			else	cout << getDifficulty(currSudoku) << ",";
+			
+			double averageTime = 0;
+			for(int j = 0; j < NUM_RUNS; j++){
+				double start = omp_get_wtime();
+				Solve(currSudoku);
+				double end = omp_get_wtime();
+				averageTime += (end-start)/(double) NUM_RUNS;
+			}
+			
+			cout << averageTime << endl;
+		}
 	}
 }
 
