@@ -15,3 +15,8 @@ Running the tests:
 	runTests_aggregateCSV.sh runs 1) and then 2) on the output of 1) to provide aggregated data in /Output folder
 	<metric> E - Runs tests using the number of empty cells as x
 	<metric> D - Runs tests using difficulty as x (difficulty=numEmpty/maxFilled)
+
+4) verify.sh <numEmpty>
+	Verify that results for textfile <numEmpty>.txt
+	All 6 sudokus in the file are tested, input sudoku and it's solution are printed
+	<numEmpty> - Integer 17-35 (inclusive) indicating file to use for verification.
