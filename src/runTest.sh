@@ -16,3 +16,12 @@
 	./backtracking.exe ../Input/24.txt $1
 	./backtracking.exe ../Input/25.txt $1
 	./backtracking.exe ../Input/26.txt $1
+	./backtracking.exe ../Input/27.txt $1
+	./backtracking.exe ../Input/28.txt $1
+	./backtracking.exe ../Input/29.txt $1
+	./backtracking.exe ../Input/30.txt $1
+	./backtracking.exe ../Input/31.txt $1
+	./backtracking.exe ../Input/32.txt $1
+	./backtracking.exe ../Input/33.txt $1
+	./backtracking.exe ../Input/34.txt $1
+	./backtracking.exe ../Input/35.txt $1
