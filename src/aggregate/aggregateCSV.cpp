@@ -3,7 +3,7 @@
 	===============================
 	
 	*Input:
-	./aggregateCSV <char*> filepath <int> aggregateOn
+	./aggregateCSV <char*> filepath <int> aggregateOn <char> aggregateType
 	
 		filepath - path to .csv file storing x,y csv pairs.
 			File structure:
@@ -14,7 +14,11 @@
 					36,1.4646e-06
 					36,2.6592e-06
 		
-		aggregateOn - Index of number to aggregate on (currently only support 0=x or 1=y)
+		aggregateOn - Index of number to aggregate on (not yet implemented)
+		
+		aggregateType -	m/M: Mean
+				s/S: Minimum
+				l/L: Maximum
 	
 	*Output:
 	<int/double> aggregatedX, <int/double> Y
@@ -46,6 +50,8 @@ typedef struct{
 	double value;
 	double sum;
 	int count;
+	double min;
+	double max;
 }distinct;
 
 //Extract data
@@ -54,22 +60,90 @@ double** getData(char* file, int numLines);
 	double* extract2DDatapoint(string line, char separator);
 
 int findDistinct(vector<distinct> distincts, double value);
-vector<distinct> aggregate(int position, double** xyValuesIn, int numLines);
+vector<distinct> aggregateMaximum(int position, double** xyValuesIn, int numLines);
+vector<distinct> aggregateMinimum(int position, double** xyValuesIn, int numLines);
+vector<distinct> aggregateAverage(int position, double** xyValuesIn, int numLines);
 
 int main (int argc, char *argv[]){
 	int numLines = getNumLines(argv[1]);
 	
 	double** xyValues = getData(argv[1], numLines);
 	
-	vector<distinct> aggregated = aggregate(strtol(argv[2], NULL, 10), xyValues, numLines);	//0=x 1=y
+	vector<distinct> aggregated;
 	
-	for(int i = 0; i < aggregated.size(); i++){
-		cout << aggregated[i].value << ",";
-		cout << aggregated[i].sum/aggregated[i].count << endl;
+	if(toupper(argv[3][0]) == 'M'){
+		aggregated = aggregateAverage(strtol(argv[2], NULL, 10), xyValues, numLines);	//0=x 1=y
+	
+		for(int i = 0; i < aggregated.size(); i++){
+			cout << aggregated[i].value << ",";
+			cout << aggregated[i].sum/aggregated[i].count << endl;
+		}
+	}
+	else{
+		if(toupper(argv[3][0]) == 'S'){
+			aggregated = aggregateMinimum(strtol(argv[2], NULL, 10), xyValues, numLines);	//0=x 1=y
+	
+			for(int i = 0; i < aggregated.size(); i++){
+				cout << aggregated[i].value << ",";
+				cout << aggregated[i].min << endl;
+			}
+		}
+		else{
+			if(toupper(argv[3][0]) == 'L'){
+			aggregated = aggregateMaximum(strtol(argv[2], NULL, 10), xyValues, numLines);	//0=x 1=y
+	
+			for(int i = 0; i < aggregated.size(); i++){
+				cout << aggregated[i].value << ",";
+				cout << aggregated[i].max << endl;
+			}
+		}
+		}
 	}
 }
 
-vector<distinct> aggregate(int position, double** xyValuesIn, int numLines){
+vector<distinct> aggregateMaximum(int position, double** xyValuesIn, int numLines){
+	vector<distinct> distincts;
+
+	for(int i = 0; i < numLines; i++){
+		int index = findDistinct(distincts, xyValuesIn[i][0]);
+
+		if(index != -1){
+			if(distincts[index].max < xyValuesIn[i][1]) distincts[index].max = xyValuesIn[i][1];
+		}
+		else{
+			distinct newDistinct;
+
+			newDistinct.value = xyValuesIn[i][0];
+			newDistinct.max = xyValuesIn[i][1];
+			distincts.push_back(newDistinct);
+		}
+	}
+
+	return distincts;
+}
+
+vector<distinct> aggregateMinimum(int position, double** xyValuesIn, int numLines){
+	vector<distinct> distincts;
+
+	for(int i = 0; i < numLines; i++){
+		int index = findDistinct(distincts, xyValuesIn[i][0]);
+
+		if(index != -1){
+			if(distincts[index].min > xyValuesIn[i][1]) distincts[index].min = xyValuesIn[i][1];
+		}
+		else{
+			distinct newDistinct;
+
+			newDistinct.value = xyValuesIn[i][0];
+			newDistinct.min = xyValuesIn[i][1];
+			distincts.push_back(newDistinct);
+		}
+	}
+
+	return distincts;
+}
+
+vector<distinct> aggregateAverage(int position, double** xyValuesIn, int numLines){
 	vector<distinct> distincts;
 
 	for(int i = 0; i < numLines; i++){

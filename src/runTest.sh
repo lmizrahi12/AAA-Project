@@ -5,7 +5,7 @@
 	cd backtracking
 	make > /dev/null
 	make clean > /dev/null
-	
+
 	./backtracking.exe ../Input/17.txt $1
 	./backtracking.exe ../Input/18.txt $1
 	./backtracking.exe ../Input/19.txt $1

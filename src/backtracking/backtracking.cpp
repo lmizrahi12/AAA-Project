@@ -40,13 +40,14 @@ OR	<double> difficulty,<double> timeTaken(s)
 
 using namespace std;
 
-const int NUM_IN_FILE = 6;	//Number of sudokus in file to use (should be automatically detected in future...)
+int NUM_IN_FILE = 0;	//Number of sudokus in file (Should be changed to local...)
 const int NUM_RUNS = 10;	//Number of refinements per sudoku
 
 //Utility
 int** getGrid(char* file);
 int** copySudoku(int** sudoku);	//Used to ensure no memory latency when accessing sudoku during solving.
 int*** getSudokus(char *file);	//Similar to getGrid, but for multiple sudokus in one text file on one line.
+int getNumLines(char* fileName); //Get number of lines in text file
 
 //Printing
 void Print_Matrix(int** matrix);
@@ -70,8 +71,9 @@ double getDifficulty(int** matrix);
 		int findMax(int boxes[3][3], int rows[9], int cols[9]);
 
 int main (int argc, char *argv[]){
+	NUM_IN_FILE = getNumLines(argv[1]);
 	int*** sudokus = getSudokus(argv[1]);
-	
+
 	doAll(sudokus, argv[2][0]);
 }
 
@@ -90,13 +92,14 @@ void doAll(int*** sudokus, char metric){
 	else{	//For empirical analysis
 	
 		for(int i = 0; i < NUM_IN_FILE; i++){
-			int** currSudoku = copySudoku(sudokus[i]);
+			int** currSudoku;
 		
 			if(toupper(metric) == 'E')	cout << getNumEmpty(sudokus[i]) << ",";
-			else	cout << getDifficulty(currSudoku) << ",";
+			else	cout << getDifficulty(sudokus[i]) << ",";
 			
 			double averageTime = 0;
 			for(int j = 0; j < NUM_RUNS; j++){
+				currSudoku = copySudoku(sudokus[i]);
 				double start = omp_get_wtime();
 				Solve(currSudoku);
 				double end = omp_get_wtime();
@@ -211,6 +214,22 @@ int*** getSudokus(char *file){   //Gets multiple sudokus from text file and stor
 	infile.close();
 
 	return matrix;
+}
+
+int getNumLines(char* fileName){
+	ifstream dataFile(fileName);
+	string line;
+	int numLines = 0;
+
+	if(dataFile.is_open()){
+		while(getline(dataFile, line)){
+			numLines++;
+		}
+	}
+
+	dataFile.close();
+
+	return numLines;
 }
 
 int** getGrid(char *file){   //Gets input from a txt file and converts to a matrix.Replaces spaces with 0's.

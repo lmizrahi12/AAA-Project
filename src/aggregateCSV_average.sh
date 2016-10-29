@@ -6,4 +6,4 @@
 	make makeaggregateCSV > /dev/null
 	make clean > /dev/null
 
-	./aggregateCSV $1 0;
+	./aggregateCSV $1 0 M;

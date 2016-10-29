@@ -45,7 +45,7 @@ The best case for this algorithm would be where all the missing blocks are low v
 We are more interested in the rate of growth of the performance of the algorithm than the actual running times and as such the specific hardware used will not be a relevant factor so long as the tests are run on the same hardware. However, the programming language that has been chosen is C++, as it is much easier and more reliable to time the algorithm with the OpenMP library, rather than Java's timing implementations. Also, Java would be easier to use for this sort of problem but the Garbage Collector may change results drastically and lead to incorrect results.
 
 \subsection{Deciding on Appropriate Data Structures}
-The data structure used is a three dimensional array. This is to store multiple sudokus (6 from the number of sudokus per text file). Prior to being passed to the backtracking algorithm, however, a sudoku is copied into a new two dimensional array. This is to reduce the memory access times required to reference the three dimensional array.
+The data structure used is a three dimensional array. This is to store multiple sudokus. Prior to being passed to the backtracking algorithm, however, a sudoku is copied into a new two dimensional array. This is to reduce any additional memory access time required to reference the three dimensional array.
 
 \newpage
 
@@ -90,11 +90,13 @@ If the any function call reaches line 13 then it means the current setup has fai
 \newpage
 
 \subsection{Create the Data}
-Data was generated using the website https://kjell.haxx.se/sudoku/. A field of 6 sudokus was generated for each number of given numbers from 17 up to 35. Another website (https://regex101.com/) was then used to convert the sudokus into the required format.
+Data was generated using the website https://kjell.haxx.se/sudoku/. A field of 6 sudokus was generated for each number of given numbers from 17 up to 35. Another website (https://regex101.com/) was then used to convert the sudokus into the required format. All the Sudokus are said to have a unique solution.
+
+It is extremely difficult to determine the layout of incomplete sudokus which should be used to create best or worst cases. As such, for a respectable approximation, the minimum and maximum runtimes of the 6 sudokus for each number of empty cells was taken as best and worst cases respectively. This is obviously not ideal yet we hope to see the theoretical analysis proved nontheless. More data may be added to the text files for a better approximation in this regard.
 
 A metric was designed to approximate the difficulty of the puzzles using the formula: \[\frac{number\_empty\_cells}{max\_number\_completed\_cells\_(block/row/column)}\]
 
-This metric is useful in approximating the difficulty of the puzzle and was found to agree with the difficulty levels quoted by the website for each puzzle. However, our main analysis uses the number of empty cells vs time. This metric is just an attempt at evaluating what makes a sudoku difficult.
+This metric is useful in approximating the difficulty of the puzzle and was found to generally agree with the difficulty levels quoted by the website for each puzzle. However, our main analysis uses the number of empty cells vs time. This metric is just an attempt at evaluating what makes a sudoku difficult. Evaluation of the metric is done in sections 4.2 and 5.2.
 
 \newpage
 
@@ -103,14 +105,23 @@ This metric is useful in approximating the difficulty of the puzzle and was foun
 Firstly we examine the graphs of time vs number of empty cells.
 
 \begin{figure}[H]
-	\includegraphics[width=0.9\linewidth, height=5cm]{graphs_outputs/EmptycellsVSTimeAggregated.jpg}
-	\caption{Aggregated data Empty cells vs time}
+	\includegraphics[width=0.9\linewidth, height=5cm]{graphs_outputs/EmptycellsVSTimeAverage.jpg}
+	\caption{Average case}
 \end{figure}
 
+\begin{figure}[H]
+	\includegraphics[width=0.9\linewidth, height=5cm]{graphs_outputs/EmptycellsVSTimeBest.jpg}
+	\caption{Best case}
+\end{figure}
+
+\begin{figure}[H]
+	\includegraphics[width=0.9\linewidth, height=5cm]{graphs_outputs/EmptycellsVSTimeWorst.jpg}
+	\caption{Worst case}
+\end{figure}
 
 \begin{figure}[H]
 	\includegraphics[width=0.9\linewidth, height=5cm]{graphs_outputs/EmptycellsVSTimeScatter.jpg}
-	\caption{Scatter plot data Empty cells vs time}
+	\caption{Scatter plot}
 \end{figure}
 
 \newpage
@@ -119,39 +130,56 @@ Firstly we examine the graphs of time vs number of empty cells.
 We now examine the test metric graphs to evaluate how good of an approximation it is for difficulty.
 
 \begin{figure}[H]
-	\includegraphics[width=0.9\linewidth, height=5cm]{graphs_outputs/DifficultyVSTimeAggregated.jpg}
-	\caption{Aggregated data Difficulty vs time}
+	\includegraphics[width=0.9\linewidth, height=5cm]{graphs_outputs/DifficultyVSTimeAverage.jpg}
+	\caption{Average case}
 \end{figure}
 
+\begin{figure}[H]
+	\includegraphics[width=0.9\linewidth, height=5cm]{graphs_outputs/DifficultyVSTimeBest.jpg}
+	\caption{Best case}
+\end{figure}
+
+\begin{figure}[H]
+	\includegraphics[width=0.9\linewidth, height=5cm]{graphs_outputs/DifficultyVSTimeWorst.jpg}
+	\caption{Worst case}
+\end{figure}
 
 \begin{figure}[H]
 	\includegraphics[width=0.9\linewidth, height=5cm]{graphs_outputs/DifficultyVSTimeScatter.jpg}
-	\caption{Scatter plot data Difficulty vs time}
+	\caption{Scatter plot}
 \end{figure}
 
 \newpage
 
 \section{Interpretation of Results}
 \subsection{Number of empty cells}
-It is clear from figure 1 that there is a sharp increase in runtime from 61 empty cells to 64 empty cells. This growth is exponential and would likely continue for sudokus with a higher number of empty cells. A somewhat small increase in runtime can be seen from 62 to 63 empty cells. We can ascertain that this is variation due to a few outliers as seen in figure 2. The number of sudokus taken into consideration for a given number of cells is only 6, so variations like these are to be expected. There is another variation in figure 1 at 58 empty cells. We can again ascertain that this is due to, in this case, a single outlier as seen in figure 2. There is a lot of variation in this problem as for some sudokus the algorithm may be 'lucky' and guess right multiple times without having to actually backtrack. Given that there are only 6 sudokus per number of empty cells, the relationship is considerably strong. It is also important to note the small runtimes for 46 to 57 empty cells, which provide small changes that cannot be viewed in figure 1 due to the scaling. Refer to figure 5 below for the graph of that region.
+It is clear from figure 1 that there is a sharp increase in runtime from 61 empty cells to 64 empty cells. This growth is exponential and would likely continue for sudokus with a higher number of empty cells. A somewhat small increase in runtime can be seen from 62 to 63 empty cells. We can ascertain that this is variation due to a few outliers as seen in figure 2. The number of sudokus taken into consideration for a given number of cells is only 6, so variations like these are to be expected. There is another variation in figure 1 at 58 empty cells. We can again ascertain that this is due to, in this case, a single outlier as seen in figure 2. There is a lot of variation in this problem as for some sudokus the algorithm may be 'lucky' and guess right multiple times without having to actually backtrack. As mentioned in the theoretical analysis, this occurs predominantly when the empty cells should contain lower numbers.
+
+In all cases we see exponential growth. However, comparing the worst and best case graphs we see slower growth in the best case graph than in the worst case graph. The best case graph spikes at 64 empty cells, ie 17 numbers given which is something of a magic number in terms of sudokus in that sudokus are known to be much more difficult to solve when 17 numbers are given.
+
+It is important to note the small runtimes for 46 to 56 empty cells, which provide small changes that cannot be viewed in figure 1 due to the scaling. Refer to figure 9 below for the graph of that region.
 
 \begin{figure}[H]
-	\includegraphics[width=0.9\linewidth, height=5cm]{graphs_outputs/EmptycellsVSTimeAggregated(Sample).jpg}
+	\includegraphics[width=0.9\linewidth, height=5cm]{graphs_outputs/EmptycellsVSTimeAverage(Sample).jpg}
 	\caption{Aggregated data Empty cells vs time for 46-57}
 \end{figure}
 
-Here we see an exponential relation as well, which again, appears as a straight line on the graph in figure 1. This really outlines the magnitude with which the runtime increased in figure 1.
+Here we see an exponential relation as well, which again, appears as a relatively straight line on the graph in figure 1. This really outlines the magnitude with which the runtime increased in figure 1.
 
 \newpage
 
 \subsection{Difficulty metric}
-The difficulty metric mostly mirrors the number of empty cells graphs, however there are much larger variations in the graphs. The metric takes into account difficulty a human would have in solving a sudoku as opposed to what the algorithm might struggle with. It does not seem to provide a better approximation than the number of empty cells. Notice the large variation right at the end of the graph (at around 21 difficulty units), this is clearly a sudoku being rated as quite difficult when it should not be considered as such. This is why the metric is not considered in the empirical analysis.
+The difficulty metric mostly mirrors the number of empty cells graphs, however there are much larger variations in the graphs. The metric seems to take into account difficulty a human would have in solving a sudoku as opposed to what the algorithm might struggle with. It does not seem to provide a better approximation than the number of empty cells. Notice the large variation right at the end of the graph (at around 21 difficulty units), this is clearly a sudoku being rated as quite difficult when it should not be considered as such. This is why the metric is not considered in the empirical analysis.
 
 \section{Relate results to Theory}
-As seen in figure 5, there is a clear exponential growth as the number of empty cells grows. Also by figure 3, it is clear that there is an exponential growth as the difficulty of the sudoku increases. As stated above the time complexity of $O(n^m)$ agrees with the graphs obtained.
+As we can see in all the graphs, an exponential growth rate is present. This agrees with the theoretical analysis. Also agreeing with the theoretical analysis, we see that the best case has a smaller constant ($n$ in the theoretical analysis) than the worst case. This can only be due to fewer backtracks in the best case since the number of empty cells is held constant.
 
 \section{Conclusion}
+\subsection{Algorithm}
 As shown by the graphs and the theoretical analysis, the time complexity of the backtracking algorithm is $O(n^m)$, which is exponential. This is not a very efficient algorithm, but when working with 9x9 grids the complexity is not very obvious. The backtracking approach to Sudoku puzzles should perform a lot more efficiently than primitive brute force as it eliminates a lot of possible attempts.
+
+\subsection{Testing methodology}
+It is unfortunate that we can not state that the sudokus used in the results for best and worst cases are in fact perfect worst/best cases. However, the results are still valid and agree with the theory. It is of utmost importance to realize that new more difficult sudokus are always being found since there are so many possible layouts and no perfect metric to rate their difficulty.
 
 \section{Acknowledgments}
 Thank you to Kjell Ericson for the test data which is created on demand at https://kjell.haxx.se/sudoku/.
