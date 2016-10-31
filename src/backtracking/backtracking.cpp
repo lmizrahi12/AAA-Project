@@ -333,7 +333,7 @@ bool anyEmptyBlock(int** matrix, int &row, int &column){
 
 
 bool Solve(int** matrix){
-	int row ;
+	int row;
 	int column;
 
 	if(!anyEmptyBlock(matrix, row, column)){  //if there are no empty blocks then the sudoku is complete
@@ -341,7 +341,7 @@ bool Solve(int** matrix){
 	}
 
 	for(int value = 0;value <= 9;value++){
-		if(!Search_Row(matrix, row, value)  &&  !Search_Column(matrix, column, value) && !Search_Square(matrix, row, column, value) ){   //chaecks is value can fit at empty block
+		if(!Search_Row(matrix, row, value)  &&  !Search_Column(matrix, column, value) && !Search_Square(matrix, row, column, value) ){   //checks if value can fit at empty block
 			matrix[row][column] = value;
 
 			if(Solve(matrix)){   //Recursively call for next available block

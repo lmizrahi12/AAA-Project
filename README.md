@@ -18,6 +18,6 @@ Running the tests:
 
 4. verify.sh 'numEmpty'
   - 'numEmpty' - Integer 17-35 (inclusive) indicating file to use for verification.
-  - Verify that results for textfile 'numEmpty'.txt
+  - Verify the results for textfile 'numEmpty'.txt
   
 All 6 sudokus in the file are tested, input sudoku and it's solution are printed
